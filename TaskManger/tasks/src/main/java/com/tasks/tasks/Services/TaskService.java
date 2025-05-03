@@ -1,5 +1,6 @@
 package com.tasks.tasks.Services;
 
+
 import com.tasks.tasks.Models.Mapper.TaskMapper;
 import com.tasks.tasks.Models.TaskStatus;
 import com.tasks.tasks.Models.dto.TaskDto;
@@ -28,8 +29,31 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    public TaskDto createTask(TaskDto taskDto) {
+        var task = TaskMapper.toEntity(taskDto);
+        var saved = taskRepository.save(task);
+        return TaskMapper.toDTO(saved);
+    }
+
+    public void deleteTask(Long id) {
+        taskRepository.deleteById(id);
+    }
+
+    public Optional<TaskDto> getTaskById(Long id) {
+        return taskRepository.findById(id).map(TaskMapper::toDTO);
+    }
+
+    public List<TaskDto> getTasksByEmployeeAndStatus(Long employeeId, TaskStatus status) {
+        return taskRepository.findByAssignedToAndStatus(employeeId, status)
+                .stream()
+                .map(TaskMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
     public List<TaskDto> getTasksByEmployeeId(Long employeeId) {
-        return taskRepository.findByAssignedTo_Id(employeeId)
+        return taskRepository.findByAssignedTo(employeeId)
                 .stream()
                 .map(TaskMapper::toDTO)
                 .collect(Collectors.toList());
@@ -48,7 +72,7 @@ public class TaskService {
             task.setDescription(updatedTask.getDescription());
             task.setDeadline(updatedTask.getDeadline());
             task.setStatus(updatedTask.getStatus());
-           // task.setAssignedTo(updatedTask.getAssignedTo());
+            task.setAssignedTo(updatedTask.getAssignedTo());
             return TaskMapper.toDTO(taskRepository.save(task));
         });
     }

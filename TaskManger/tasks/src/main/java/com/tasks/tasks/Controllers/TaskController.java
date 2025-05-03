@@ -20,10 +20,37 @@ public class TaskController {
     public List<TaskDto> getAllTasks() {
         return taskService.getAllTasks();
     }
+
+    @PostMapping
+    public ResponseEntity<TaskDto> createTask(@RequestBody TaskDto taskDto) {
+        return ResponseEntity.ok(taskService.createTask(taskDto));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskDto> getTaskById(@PathVariable Long id) {
+        return taskService.getTaskById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/filter")
+    public List<TaskDto> getTasksByEmployeeAndStatus(@RequestParam Long employeeId, @RequestParam String status) {
+        TaskStatus taskStatus = TaskStatus.valueOf(status.toUpperCase());
+        return taskService.getTasksByEmployeeAndStatus(employeeId, taskStatus);
+    }
+
+
+
+
     @GetMapping("/employee")
     public List<TaskDto> getTasksByEmployee(@RequestParam Long employeeId) {
         return taskService.getTasksByEmployeeId(employeeId);
     }
+
 
     @GetMapping("/status")
     public List<TaskDto> getTasksByStatus(@RequestParam String status) {
