@@ -13,9 +13,7 @@ spring:
         - id: user
           uri: lb://USER
           predicates:
-            - Path=/employee/**
-            - Path=/manager/**
-            - Path=/user/**
+            - Path=/employee/**, /manager/**, /user/**
 
         - id: tasks
           uri: lb://tasks
