@@ -15,7 +15,10 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
-
+    @GetMapping("/error")
+    public String triggerError() {
+        throw new RuntimeException("This is a test exception");
+    }
     @GetMapping("/get-all-tasks")
     public List<TaskDto> getAllTasks() {
         return taskService.getAllTasks();

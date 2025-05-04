@@ -21,3 +21,19 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     register-with-eureka: true
     fetch-registry: true
+logging:
+  level:
+    root: ERROR
+    com.taskManger: ERROR
+  file:
+    name: logs/error.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%level] %logger{36} - %msg%n"
+  exception-conversion-word: "%message"
+
+jwt:
+  secret: "my-secret-key"  # Should be a long, complex string in production
+  expiration: 86400000     # 24 hours in milliseconds
+  issuer: "taskManger"  # Optional but recommended
+  token-prefix: "Bearer"   # Standard prefix for JWT in Authorization header
+  header: "Authorization"  # Header where to expect the token
