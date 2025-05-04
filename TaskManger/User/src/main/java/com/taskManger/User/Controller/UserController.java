@@ -5,10 +5,8 @@ import com.taskManger.User.DTO.UserAuth;
 import com.taskManger.User.DTO.UserDTO;
 import com.taskManger.User.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -25,4 +23,17 @@ public class UserController {
             return "Invalid";
     }
 
+    @PutMapping("/update-pass/{id}")
+    public ResponseEntity<String> updatePassword(@PathVariable Integer id, @RequestBody String newPassword)
+    {
+        userService.updatePassword(id,newPassword);
+        return ResponseEntity.ok("Password updated successfully");
+    }
+
+    @GetMapping("view-user-by-id/{id}")
+    public ResponseEntity<UserDTO> viewUserById(@PathVariable Integer id)
+    {
+        UserDTO userDTO = userService.viewUserByiId(id);
+        return ResponseEntity.ok(userDTO);
+    }
 }

@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserDTO {
-    private Integer id;
+public class UserInsertDTO {
     private String name;
     private String email;
     private String role;
+    private String password;
 }

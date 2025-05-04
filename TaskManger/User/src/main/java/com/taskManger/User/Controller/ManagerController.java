@@ -1,25 +1,41 @@
 package com.taskManger.User.Controller;
 
 import com.taskManger.User.DTO.UserDTO;
+import com.taskManger.User.DTO.UserInsertDTO;
 import com.taskManger.User.Service.ManagerService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/manger")
+@RequestMapping("/manager")
 public class ManagerController {
 
     @Autowired
     private ManagerService managerService;
 
     @PostMapping("/add-user")
-    public String addUser(@RequestBody UserDTO request){
-        if(managerService.addUser(request))
-            return "added successfully";
-        else
-            return "Failed to add user";
+    public ResponseEntity<String> addUser(@RequestBody UserInsertDTO request) {
+        managerService.addUser(request);
+        return ResponseEntity.ok("User added successfully");
     }
+
+    @GetMapping("/view-all-users")
+    public  ResponseEntity<List<UserDTO>> viewAllUsers()
+    {
+        List<UserDTO> userDTOList = managerService.viewAllUsers();
+        return ResponseEntity.ok(userDTOList);
+    }
+
+    @DeleteMapping("/delete-user/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Integer id) {
+        managerService.deleteUser(id);
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
+
+
 }
