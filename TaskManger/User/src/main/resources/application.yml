@@ -4,7 +4,8 @@ server:
 spring:
   application:
     name: User
-
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     url: jdbc:mysql://localhost:3306/task_manger
     username: root
@@ -14,4 +15,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
