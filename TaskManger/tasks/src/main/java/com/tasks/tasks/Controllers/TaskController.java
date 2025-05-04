@@ -16,7 +16,7 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @GetMapping
+    @GetMapping("/get-all-tasks")
     public List<TaskDto> getAllTasks() {
         return taskService.getAllTasks();
     }
