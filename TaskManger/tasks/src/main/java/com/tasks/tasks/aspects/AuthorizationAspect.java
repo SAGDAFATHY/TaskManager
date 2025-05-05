@@ -1,6 +1,7 @@
 package com.tasks.tasks.aspects;
 
-import com.taskManger.User.security.JwtUtil;
+import com.tasks.tasks.security.JwtUtil;
+import com.tasks.tasks.annotations.RoleCheck;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
