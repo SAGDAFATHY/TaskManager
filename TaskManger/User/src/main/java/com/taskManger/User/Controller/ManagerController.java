@@ -3,7 +3,7 @@ package com.taskManger.User.Controller;
 import com.taskManger.User.DTO.UserDTO;
 import com.taskManger.User.DTO.UserInsertDTO;
 import com.taskManger.User.Service.ManagerService;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import com.taskManger.User.annotations.Authenticated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,11 @@ public class ManagerController {
 
     @Autowired
     private ManagerService managerService;
-
+    @GetMapping("/error")
+    public String triggerError() {
+        throw new RuntimeException("This is a test exception");
+    }
+    @Authenticated
     @PostMapping("/add-user")
     public ResponseEntity<String> addUser(@RequestBody UserInsertDTO request) {
         managerService.addUser(request);
