@@ -5,6 +5,7 @@ import com.tasks.tasks.Models.Mapper.TaskMapper;
 import com.tasks.tasks.Models.TaskStatus;
 import com.tasks.tasks.Models.dto.TaskDto;
 import com.tasks.tasks.Repositeries.TaskRepository;
+import com.tasks.tasks.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,17 @@ import java.util.stream.Collectors;
 @Transactional
 public class TaskService {
 
-    private final TaskRepository taskRepository;
-
     @Autowired
-    public List<TaskDto> getAllTasks() {
+    private final TaskRepository taskRepository;
+    private final JwtUtil jwtUtil;
+    public Integer getUserId(String token)
+    {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        return jwtUtil.extractUserId(token);
+    }
+    public List<TaskDto> getAllTasks(Integer userId) {
         try {
             return taskRepository.findAll()
                     .stream()
@@ -33,7 +41,7 @@ public class TaskService {
         }
     }
 
-    public TaskDto createTask(TaskDto taskDto) {
+    public TaskDto createTask(TaskDto taskDto,Integer userId) {
         if (taskDto == null) {
             throw new IllegalArgumentException("Task data cannot be null");
         }
@@ -51,7 +59,7 @@ public class TaskService {
         }
     }
 
-    public void deleteTask(Long id) {
+    public void deleteTask(Long id,Integer userId) {
         if (!taskRepository.existsById(id)) {
             throw new IllegalArgumentException("Task not found with id: " + id);
         }
@@ -63,13 +71,13 @@ public class TaskService {
         }
     }
 
-    public Optional<TaskDto> getTaskById(Long id) {
+    public Optional<TaskDto> getTaskById(Long id,Integer userId) {
         return Optional.ofNullable(taskRepository.findById(id)
                 .map(TaskMapper::toDTO)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found with id: " + id)));
     }
 
-    public List<TaskDto> getTasksByEmployeeAndStatus(Long employeeId, TaskStatus status) {
+    public List<TaskDto> getTasksByEmployeeAndStatus(Long employeeId, TaskStatus status, Integer userId) {
         try {
             return taskRepository.findByAssignedToAndStatus(employeeId, status)
                     .stream()
@@ -85,7 +93,7 @@ public class TaskService {
 
 
 
-    public List<TaskDto> getTasksByEmployeeId(Long employeeId) {
+    public List<TaskDto> getTasksByEmployeeId(Long employeeId,Integer userId) {
         try {
             return taskRepository.findByAssignedTo(employeeId)
                     .stream()
@@ -98,7 +106,7 @@ public class TaskService {
         }
     }
 
-    public List<TaskDto> getTasksByStatus(TaskStatus status) {
+    public List<TaskDto> getTasksByStatus(TaskStatus status,Integer userId) {
         try {
             return taskRepository.findByStatus(status)
                     .stream()
@@ -111,7 +119,7 @@ public class TaskService {
         }
     }
 
-    public Optional<TaskDto> updateTask(Long id, TaskDto updatedTask) {
+    public Optional<TaskDto> updateTask(Long id, TaskDto updatedTask,Integer userId) {
         if (updatedTask == null) {
             throw new IllegalArgumentException("Updated task data cannot be null");
         }
