@@ -1,9 +1,8 @@
-package com.taskManger.User.aspects;
+package com.tasks.tasks.aspects;
 
-import com.taskManger.User.annotations.*;
-import com.taskManger.User.security.JwtUtil;
+import com.tasks.tasks.security.JwtUtil;
+import com.tasks.tasks.annotations.RoleCheck;
 import jakarta.servlet.http.HttpServletRequest;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
-import java.util.Collection;
 
 @Aspect
 @Component

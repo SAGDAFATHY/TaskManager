@@ -5,7 +5,9 @@ import com.taskManger.User.DTO.UserDTO;
 import com.taskManger.User.Mapper.UserMapper;
 import com.taskManger.User.Model.UserEntity;
 import com.taskManger.User.Repository.UserRepository;
+import com.taskManger.User.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,11 +18,18 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public boolean Login(UserAuth userAuth)
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public String Login(UserAuth userAuth)
     {
-        return userRepository.findByEmail(userAuth.getEmail())
-                .map(user -> user.getPassword().equals(userAuth.getPassword()))
-                .orElse(false);
+        UserEntity user = userRepository.findByEmail(userAuth.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException ("User not found"));
+        if (!user.getPassword().equals(userAuth.getPassword())) {
+            throw new IllegalArgumentException ("Invalid password");
+        }
+
+        return jwtUtil.generateToken(user.getId(),user.getEmail(), user.getRole());
     }
 
     public void updatePassword(Integer id,String newPassword)
