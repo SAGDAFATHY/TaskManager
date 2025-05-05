@@ -22,31 +22,37 @@ public class TaskController {
     }
 
     @RoleCheck(roles = {"manager"})
-    @GetMapping("/get-all-tasks")
+    @GetMapping("/manager")
     public List<TaskDto> getAllTasks(@RequestHeader("Authorization") String token) {
-        return taskService.getAllTasks(taskService.getUserId(token));
+        return taskService.getAllTasks();
     }
 
     @RoleCheck(roles = {"manager"})
-    @PostMapping
+    @PostMapping("/manager")
     public ResponseEntity<TaskDto> createTask(@RequestBody TaskDto taskDto,@RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok(taskService.createTask(taskDto,taskService.getUserId(token)));
+        return ResponseEntity.ok(taskService.createTask(taskDto));
     }
 
     @RoleCheck(roles = {"manager"})
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/manager/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id,@RequestHeader("Authorization") String token) {
-        taskService.deleteTask(id,taskService.getUserId(token));
+        taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
 
     @RoleCheck(roles = {"manager","employee"})
     @GetMapping("/{id}")
     public ResponseEntity<TaskDto> getTaskById(@PathVariable Long id,@RequestHeader("Authorization") String token) {
-        return taskService.getTaskById(id,taskService.getUserId(token))
+        return taskService.getTaskById(id,token)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    @RoleCheck(roles = {"employee"})
+    @GetMapping("/employee/my-tasks")
+    public ResponseEntity<List<TaskDto>> getUserTasks(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(taskService.getUserTasks(token));
+    }
+
 
     @RoleCheck(roles = {"manager","employee"})
     @GetMapping("/filter")
