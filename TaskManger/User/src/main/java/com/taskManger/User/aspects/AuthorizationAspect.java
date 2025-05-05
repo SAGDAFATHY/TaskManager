@@ -1,53 +1,49 @@
 package com.taskManger.User.aspects;
 
 import com.taskManger.User.annotations.*;
+import com.taskManger.User.security.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
 import java.util.Collection;
 
 @Aspect
 @Component
 public class AuthorizationAspect {
+    @Autowired
+    private HttpServletRequest request;
 
-    @Before("@annotation(authenticated)")
-    public void checkAuthenticated(Authenticated authenticated) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Authentication required");
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Before("@annotation(roleCheck)")
+    public void checkRole(RoleCheck roleCheck) throws AccessDeniedException {
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new AccessDeniedException("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7); // Strip "Bearer "
+        String userRole;
+
+        try {
+            userRole = jwtUtil.extractUserRole(token);
+        } catch (Exception e) {
+            throw new AccessDeniedException("Invalid token");
+        }
+
+        if (userRole == null || Arrays.stream(roleCheck.roles()).noneMatch(r -> r.equalsIgnoreCase(userRole))) {
+            throw new AccessDeniedException("Access Denied: Role not permitted");
         }
     }
 
-    @Before("@annotation(managerOnly)")
-    public void checkManager(ManagerOnly managerOnly) {
-        checkRole("ROLE_MANAGER");
-    }
 
-    @Before("@annotation(employeeOnly)")
-    public void checkEmployee(EmployeeOnly employeeOnly) {
-        checkRole("ROLE_EMPLOYEE");
-    }
-
-    private void checkRole(String requiredRole) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("Authentication required");
-        }
-
-        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
-        boolean hasRole = authorities.stream()
-                .anyMatch(authority -> authority.getAuthority().equals(requiredRole));
-
-        if (!hasRole) {
-            throw new AccessDeniedException("Insufficient privileges");
-        }
-    }
 }
 

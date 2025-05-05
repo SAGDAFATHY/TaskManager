@@ -32,7 +32,7 @@ logging:
   exception-conversion-word: "%message"
 
 jwt:
-  secret: "my-secret-key"  # Should be a long, complex string in production
+  secret: "Z3Vuc0Bqd3Qua2V5LjMyYnl0ZXNNaW5pbXVtISEhISE=" # Should be a long, complex string in production
   expiration: 86400000     # 24 hours in milliseconds
   issuer: "taskManger"  # Optional but recommended
   token-prefix: "Bearer"   # Standard prefix for JWT in Authorization header
