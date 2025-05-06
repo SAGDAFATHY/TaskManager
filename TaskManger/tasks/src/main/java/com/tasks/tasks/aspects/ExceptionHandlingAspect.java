@@ -15,7 +15,7 @@ public class ExceptionHandlingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlingAspect.class);
 
-    @Pointcut("within(com.taskManger.User..*)")
+    @Pointcut("within(com.tasks.tasks..*)")
     public void applicationPackagePointcut() {}
 
     @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
