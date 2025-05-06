@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 2025-05-05 13:58:56 ERROR o.a.c.c.C.[.[.[.[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: io.jsonwebtoken.io.DecodingException: Illegal base64 character: '-'] with root cause
 io.jsonwebtoken.io.DecodingException: Illegal base64 character: '-'
 	at io.jsonwebtoken.io.Base64.ctoi(Base64.java:221)
@@ -1295,3 +1296,9 @@ Action:
 Identify and stop the process that's listening on port 8081 or configure this application to listen on another port.
 
 2025-05-06 21:35:06 ERROR c.t.U.a.ExceptionHandlingAspect - Exception in com.taskManger.User.Controller.UserController.Login() with message: Invalid password
+=======
+2025-05-05 23:04:06 ERROR c.t.t.a.ExceptionHandlingAspect - Exception in com.tasks.tasks.Controllers.TaskController.triggerError() with message: This is a test exception
+2025-05-05 23:04:07 ERROR c.t.t.a.ExceptionHandlingAspect - Exception in com.tasks.tasks.Controllers.TaskController.triggerError() with message: This is a test exception
+2025-05-05 23:04:10 ERROR c.t.t.a.ExceptionHandlingAspect - Exception in com.tasks.tasks.Controllers.TaskController.triggerError() with message: This is a test exception
+2025-05-05 23:13:58 ERROR c.t.U.a.ExceptionHandlingAspect - Exception in com.taskManger.User.Controller.UserController.Login() with message: Invalid password
+>>>>>>> 91ef242153bbd5c85e5ff85469bb90ea602ccee7
