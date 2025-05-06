@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -15,6 +17,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+    @CrossOrigin(origins = "*")
     @PostMapping("/login")
     public ResponseEntity<String> Login(@RequestBody UserAuth request){
         return ResponseEntity.ok(userService.Login(request));
