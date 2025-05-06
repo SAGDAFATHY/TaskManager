@@ -14,11 +14,24 @@ spring:
           uri: lb://USER
           predicates:
             - Path=/employee/**, /manager/**, /user/**
-
         - id: tasks
           uri: lb://tasks
           predicates:
             - Path=/tasks/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+add-to-simple-url-handler-mapping: true
+
 
 eureka:
   client:
