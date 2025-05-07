@@ -23,7 +23,7 @@ public class TaskController {
 
     @RoleCheck(roles = {"manager"})
     @GetMapping("/manager")
-    public List<TaskDto> getAllTasks(@RequestHeader("Authorization") String token) {
+    public List<TaskDto> getAllTasks() {
         return taskService.getAllTasks();
     }
 
