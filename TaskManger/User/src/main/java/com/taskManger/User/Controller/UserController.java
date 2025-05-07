@@ -31,6 +31,8 @@ public class UserController {
         return ResponseEntity.ok("Password updated successfully");
     }
 
+
+    @CrossOrigin(origins = "*")
     @RoleCheck(roles = {"manager","employee"})
     @GetMapping("view-user-by-id/{id}")
     public ResponseEntity<UserDTO> viewUserById(@PathVariable Integer id)
