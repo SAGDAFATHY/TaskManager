@@ -30,4 +30,9 @@ public class Task {
 
     @Column(name = "assigned_to")
     private Long assignedTo; // Assuming a User entity exists
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
 }

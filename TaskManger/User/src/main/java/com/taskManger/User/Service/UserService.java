@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -40,6 +41,7 @@ public class UserService {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
         UserEntity user = optionalUser.get();
+        user.setUpdateAt(LocalDateTime.now());
         user.setPassword(newPassword);
         userRepository.save(user);
     }

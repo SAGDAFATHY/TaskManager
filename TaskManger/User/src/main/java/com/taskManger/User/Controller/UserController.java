@@ -23,7 +23,7 @@ public class UserController {
     public ResponseEntity<String> Login(@RequestBody UserAuth request){
         return ResponseEntity.ok(userService.Login(request));
     }
-    @RoleCheck(roles={"manger","employee"})
+    @RoleCheck(roles={"manager","employee"})
     @PutMapping("/update-pass/{id}")
     public ResponseEntity<String> updatePassword(@PathVariable Integer id, @RequestBody String newPassword)
     {
