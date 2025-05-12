@@ -7,6 +7,8 @@ import com.taskManger.User.Model.UserEntity;
 import com.taskManger.User.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ public class ManagerService {
             throw new IllegalArgumentException("User already exists");
         } else {
             UserEntity newUser = UserMapper.toEntity(user);
+            newUser.setCreatedAt(LocalDateTime.now());
             userRepository.save(newUser);
         }
     }

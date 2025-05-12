@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Table(name = "users")
 @Entity
 @Data
@@ -25,4 +27,9 @@ public class UserEntity {
     private String role;
     @Column(name = "password")
     private String password;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
+
 }

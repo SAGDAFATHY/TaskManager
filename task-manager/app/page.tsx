@@ -46,14 +46,7 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(userData))
         console.log("User data stored in localStorage:", userData)
 
-        // Redirect based on role
-        if (userData.role === "manager") {
-          console.log("Redirecting to manager dashboard")
-          router.push("/dashboard/manager")
-        } else {
-          console.log("Redirecting to employee dashboard")
-          router.push("/dashboard/employee")
-        }
+        router.push("/dashboard")
       } catch (userError) {
         console.error("Error fetching user details:", userError)
 

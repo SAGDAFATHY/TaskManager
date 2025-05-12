@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,6 +63,7 @@ public class TaskService {
 
         try {
             var task = TaskMapper.toEntity(taskDto);
+            task.setCreatedAt(LocalDateTime.now());
             var saved = taskRepository.save(task);
             return TaskMapper.toDTO(saved);
         } catch (Exception e) {
@@ -173,8 +175,9 @@ public class TaskService {
                         if (updatedTask.getAssignedTo() != null) {
                             task.setAssignedTo(updatedTask.getAssignedTo());
                         }
-
-                        return TaskMapper.toDTO(taskRepository.save(task));
+                        var taskUpdated = taskRepository.save(task);
+                        taskUpdated.setUpdateAt(LocalDateTime.now());
+                        return TaskMapper.toDTO(taskUpdated);
                     });
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to update task with id: " + id);

@@ -35,15 +35,15 @@ export function DashboardSidebar() {
   const navItems = [
     {
       title: "Dashboard",
-      href: `/dashboard/${userRole}`,
+      href: `/dashboard`,
       icon: LayoutDashboard,
       role: "all",
     },
     {
-      title: "My Tasks",
+      title: "Tasks",
       href: `/dashboard/${userRole}`,
       icon: CheckSquare,
-      role: "employee",
+      role: "all",
     },
     {
       title: "Users",
