@@ -118,7 +118,6 @@ export default function CreateTaskPage() {
                   type="datetime-local"
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
-                  required
                 />
               </div>
 

@@ -102,7 +102,6 @@ export function DashboardSidebar() {
 
           <div className="border-t p-4">
             <div className="mb-2 flex items-center">
-              <div className="h-8 w-8 rounded-full bg-gray-200" />
               <div className="ml-3">
                 <p className="text-sm font-medium">{userName}</p>
                 <p className="text-xs text-gray-500">Role: {userRole}</p>

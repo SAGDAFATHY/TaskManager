@@ -43,9 +43,7 @@ public class TaskController {
     @RoleCheck(roles = {"manager","employee"})
     @GetMapping("/{id}")
     public ResponseEntity<TaskDto> getTaskById(@PathVariable Long id,@RequestHeader("Authorization") String token) {
-        return taskService.getTaskById(id,token)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(taskService.getTaskById(id,token));
     }
     @RoleCheck(roles = {"employee"})
     @GetMapping("/employee/my-tasks")
@@ -77,9 +75,7 @@ public class TaskController {
     @RoleCheck(roles = {"manager","employee"})
     @PutMapping("/{id}")
     public ResponseEntity<TaskDto> updateTask(@PathVariable Long id, @RequestBody TaskDto taskDTO,@RequestHeader("Authorization") String token) {
-        return taskService.updateTask(id, taskDTO,taskService.getUserId(token))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(taskService.updateTask(id, taskDTO,taskService.getUserId(token)));
     }
 
 }
