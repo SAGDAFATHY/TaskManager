@@ -8,13 +8,15 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AuthGuard } from "@/components/auth-guard"
-import { getAllTasks, getAllUsers } from "@/lib/api"
+import { getAllTasks, getAllUsers, getTasksByStatus, getTasksByEmployee, getTasksByEmployeeAndStatus } from "@/lib/api"
 import type { Task, User } from "@/lib/types"
 
 export default function ManagerDashboard() {
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [allTasks, setAllTasks] = useState<Task[]>([])
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([])
   const [employees, setEmployees] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isFiltering, setIsFiltering] = useState(false)
   const [error, setError] = useState("")
   const [filters, setFilters] = useState({
     status: "all",
@@ -22,63 +24,107 @@ export default function ManagerDashboard() {
   })
   const router = useRouter()
 
+  // Fetch initial data
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       try {
         const token = localStorage.getItem("token") || ""
         if (!token) {
           throw new Error("Authentication token not found. Please log in again.")
         }
 
-        console.log("Fetching tasks and employees for manager dashboard")
-
-        // Fetch tasks
-        const tasksData = await getAllTasks(token)
-        console.log(`Received ${tasksData.length} tasks`)
-
-        // Fetch employees to get names
+        // Fetch employees first
         const allUsers = await getAllUsers(token)
         const employeesList = allUsers.filter((user) => user.role === "employee")
-        console.log(`Received ${employeesList.length} employees`)
         setEmployees(employeesList)
 
-        // Enhance tasks with employee names if not already present
-        const enhancedTasks = tasksData.map((task) => {
-          if (task.assignedTo) return task
+        // Then fetch tasks
+        const tasksData = await getAllTasks(token)
 
+        // Enhance tasks with employee names
+        const enhancedTasks = tasksData.map((task) => {
           const employee = employeesList.find((emp) => emp.id === task.assignedTo)
           return {
             ...task,
-            employeeName: employee ? employee.name : "Unknown",
+            employeeName: employee ? employee.name : "Unassigned",
           }
         })
 
-        setTasks(enhancedTasks)
+        setAllTasks(enhancedTasks)
+        setFilteredTasks(enhancedTasks)
       } catch (err) {
         console.error("Error fetching data:", err)
-
-        if (err.message === "Failed to fetch") {
-          setError("Cannot connect to the backend server. Please ensure your backend is running and accessible.")
-        } else {
-          setError(err instanceof Error ? err.message : "Failed to load data. Please try again later.")
-        }
+        setError(err instanceof Error ? err.message : "Failed to load data. Please try again later.")
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchData()
+    fetchInitialData()
   }, [])
+
+  // Apply filters when they change
+  useEffect(() => {
+    const applyFilters = async () => {
+      // Skip if we're still loading initial data or if we have no tasks
+      if (isLoading || allTasks.length === 0) return
+
+      try {
+        setIsFiltering(true)
+        const token = localStorage.getItem("token") || ""
+        if (!token) return
+
+        let result: Task[] = []
+
+        if (filters.status === "all" && filters.employee === "all") {
+          // Use local filtering when showing all
+          result = allTasks
+        } else if (filters.status === "all") {
+          // Only employee filter
+          if (filters.employee === "all") {
+            result = allTasks
+          } else {
+            const tasks = await getTasksByEmployee(parseInt(filters.employee), token)
+            result = tasks.map(task => ({
+              ...task,
+              employeeName: employees.find(emp => emp.id === task.assignedTo)?.name || "Unassigned"
+            }))
+          }
+        } else if (filters.employee === "all") {
+          // Only status filter
+          const tasks = await getTasksByStatus(filters.status, token)
+          result = tasks.map(task => ({
+            ...task,
+            employeeName: employees.find(emp => emp.id === task.assignedTo)?.name || "Unassigned"
+          }))
+        } else {
+          // Both filters
+          const tasks = await getTasksByEmployeeAndStatus(
+            parseInt(filters.employee),
+            filters.status,
+            token
+          )
+          result = tasks.map(task => ({
+            ...task,
+            employeeName: employees.find(emp => emp.id === task.assignedTo)?.name || "Unassigned"
+          }))
+        }
+
+        setFilteredTasks(result)
+      } catch (err) {
+        console.error("Error applying filters:", err)
+        setError("Failed to apply filters. Please try again.")
+      } finally {
+        setIsFiltering(false)
+      }
+    }
+
+    applyFilters()
+  }, [filters, allTasks, employees, isLoading])
 
   const handleCreateTask = () => {
     router.push("/dashboard/manager/tasks/create")
   }
-
-  const filteredTasks = tasks.filter((task) => {
-    const matchesStatus = filters.status === "all" || task.status === filters.status
-    const matchesEmployee = filters.employee === "all" || task.assignedTo === Number.parseInt(filters.employee)
-    return matchesStatus && matchesEmployee
-  })
 
   return (
     <AuthGuard requiredRole="manager">
@@ -90,7 +136,12 @@ export default function ManagerDashboard() {
           </Button>
         </div>
 
-        <TaskFilters filters={filters} setFilters={setFilters} showEmployeeFilter={true} employees={employees} />
+        <TaskFilters 
+          filters={filters} 
+          setFilters={setFilters} 
+          showEmployeeFilter={true} 
+          employees={employees} 
+        />
 
         <Card>
           <CardHeader>
@@ -103,8 +154,21 @@ export default function ManagerDashboard() {
                 <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
                 <span>Loading tasks...</span>
               </div>
+            ) : error ? (
+              <div className="text-destructive">{error}</div>
+            ) : isFiltering ? (
+              <div className="flex justify-center items-center h-32">
+                <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                <span>Applying filters...</span>
+              </div>
             ) : (
-              <TaskList tasks={filteredTasks} isLoading={false} error={error} isManager={true} employees={employees} />
+              <TaskList 
+                tasks={filteredTasks} 
+                isLoading={false} 
+                error="" 
+                isManager={true} 
+                employees={employees} 
+              />
             )}
           </CardContent>
         </Card>

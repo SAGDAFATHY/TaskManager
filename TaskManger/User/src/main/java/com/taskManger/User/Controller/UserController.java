@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-@CrossOrigin(origins = "*")
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -18,7 +18,7 @@ public class UserController {
     private UserService userService;
 
 
-    @CrossOrigin(origins = "*")
+
     @PostMapping("/login")
     public ResponseEntity<String> Login(@RequestBody UserAuth request){
         return ResponseEntity.ok(userService.Login(request));
@@ -32,7 +32,7 @@ public class UserController {
     }
 
 
-    @CrossOrigin(origins = "*")
+
     @RoleCheck(roles = {"manager","employee"})
     @GetMapping("view-user-by-id/{id}")
     public ResponseEntity<UserDTO> viewUserById(@PathVariable Integer id)

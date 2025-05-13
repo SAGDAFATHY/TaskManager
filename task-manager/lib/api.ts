@@ -145,7 +145,7 @@ export const getTasksByEmployee = async (employeeId: number, token: string): Pro
   return await response.json()
 }
 
-export const getTasksByStatus = async (status: TaskStatus, token: string): Promise<Task[]> => {
+export const getTasksByStatus = async (status: string, token: string): Promise<Task[]> => {
   const response = await handleFetch(`${API_BASE_URL}/tasks/status?status=${status}`, {
     headers: { Authorization: token },
   })

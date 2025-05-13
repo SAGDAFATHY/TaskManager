@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class TaskService {
 
-   // @Autowired
+    @Autowired
     private final TaskRepository taskRepository;
     @Autowired
     private final JwtUtil jwtUtil;
@@ -61,6 +61,18 @@ public class TaskService {
             throw new IllegalArgumentException("Task title is required");
         }
 
+        if (taskDto.getDescription() == null || taskDto.getDescription().isBlank()) {
+            throw new IllegalArgumentException("Task Description is required");
+        }
+
+        if (taskDto.getDeadline() == null) {
+            throw new IllegalArgumentException("Task Deadline is required");
+        }
+
+        if (taskDto.getAssignedTo() == null) {
+            throw new IllegalArgumentException("Task must be assigned to a user");
+        }
+
         try {
             var task = TaskMapper.toEntity(taskDto);
             task.setCreatedAt(LocalDateTime.now());
@@ -83,17 +95,17 @@ public class TaskService {
         }
     }
 
-    public Optional<TaskDto> getTaskById(Long id , String token) {
+    public TaskDto getTaskById(Long id , String token) {
         Long userId = getUserId(token);
         String role = getRoleFromToken(token);
-        if (role.equals("manager")) {
-            return taskRepository.findById(id)
-                    .map(TaskMapper::toDTO);
+            if (role.equals("manager")) {
+                return taskRepository.findById(id)
+                        .map(TaskMapper::toDTO).orElseThrow(() -> new IllegalArgumentException("Task not found"));
 
-        } else {
-            return taskRepository.findByIdAndAssignedTo(id, userId)
-                    .map(TaskMapper::toDTO);
-        }
+            } else {
+                return taskRepository.findByIdAndAssignedTo(id, userId)
+                        .map(TaskMapper::toDTO).orElseThrow(() -> new IllegalArgumentException("Task not found"));
+            }
     }
 
     public List<TaskDto> getUserTasks(String token) {
@@ -152,35 +164,29 @@ public class TaskService {
         }
     }
 
-    public Optional<TaskDto> updateTask(Long id, TaskDto updatedTask,Long userId) {
+    public TaskDto updateTask(Long id, TaskDto updatedTask,Long userId) {
         if (updatedTask == null) {
             throw new IllegalArgumentException("Updated task data cannot be null");
         }
-
-        try {
-            return taskRepository.findById(id)
-                    .map(task -> {
-                        if (updatedTask.getTitle() != null) {
-                            task.setTitle(updatedTask.getTitle());
-                        }
-                        if (updatedTask.getDescription() != null) {
-                            task.setDescription(updatedTask.getDescription());
-                        }
-                        if (updatedTask.getDeadline() != null) {
-                            task.setDeadline(updatedTask.getDeadline());
-                        }
-                        if (updatedTask.getStatus() != null) {
-                            task.setStatus(updatedTask.getStatus());
-                        }
-                        if (updatedTask.getAssignedTo() != null) {
-                            task.setAssignedTo(updatedTask.getAssignedTo());
-                        }
-                        var taskUpdated = taskRepository.save(task);
-                        taskUpdated.setUpdateAt(LocalDateTime.now());
-                        return TaskMapper.toDTO(taskUpdated);
-                    });
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to update task with id: " + id);
-        }
+        return taskRepository.findById(id)
+                .map(task -> {
+                    if (updatedTask.getTitle() != null) {
+                        task.setTitle(updatedTask.getTitle());
+                    }
+                    if (updatedTask.getDescription() != null) {
+                        task.setDescription(updatedTask.getDescription());
+                    }
+                    if (updatedTask.getDeadline() != null) {
+                        task.setDeadline(updatedTask.getDeadline());
+                    }
+                    if (updatedTask.getStatus() != null) {
+                        task.setStatus(updatedTask.getStatus());
+                    }
+                    if (updatedTask.getAssignedTo() != null) {
+                        task.setAssignedTo(updatedTask.getAssignedTo());
+                    }
+                    task.setUpdateAt(LocalDateTime.now());
+                    return TaskMapper.toDTO(taskRepository.save(task));
+                }).orElseThrow(() -> new IllegalArgumentException("Task not found"));
     }
 }
