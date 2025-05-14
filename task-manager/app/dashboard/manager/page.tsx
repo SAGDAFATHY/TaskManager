@@ -24,7 +24,6 @@ export default function ManagerDashboard() {
   })
   const router = useRouter()
 
-  // Fetch initial data
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -33,15 +32,14 @@ export default function ManagerDashboard() {
           throw new Error("Authentication token not found. Please log in again.")
         }
 
-        // Fetch employees first
+        
         const allUsers = await getAllUsers(token)
         const employeesList = allUsers.filter((user) => user.role === "employee")
         setEmployees(employeesList)
 
-        // Then fetch tasks
+        
         const tasksData = await getAllTasks(token)
 
-        // Enhance tasks with employee names
         const enhancedTasks = tasksData.map((task) => {
           const employee = employeesList.find((emp) => emp.id === task.assignedTo)
           return {
@@ -63,10 +61,10 @@ export default function ManagerDashboard() {
     fetchInitialData()
   }, [])
 
-  // Apply filters when they change
+
   useEffect(() => {
     const applyFilters = async () => {
-      // Skip if we're still loading initial data or if we have no tasks
+ 
       if (isLoading || allTasks.length === 0) return
 
       try {
@@ -77,10 +75,10 @@ export default function ManagerDashboard() {
         let result: Task[] = []
 
         if (filters.status === "all" && filters.employee === "all") {
-          // Use local filtering when showing all
+
           result = allTasks
         } else if (filters.status === "all") {
-          // Only employee filter
+
           if (filters.employee === "all") {
             result = allTasks
           } else {
@@ -91,14 +89,14 @@ export default function ManagerDashboard() {
             }))
           }
         } else if (filters.employee === "all") {
-          // Only status filter
+
           const tasks = await getTasksByStatus(filters.status, token)
           result = tasks.map(task => ({
             ...task,
             employeeName: employees.find(emp => emp.id === task.assignedTo)?.name || "Unassigned"
           }))
         } else {
-          // Both filters
+
           const tasks = await getTasksByEmployeeAndStatus(
             parseInt(filters.employee),
             filters.status,

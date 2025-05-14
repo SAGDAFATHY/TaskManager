@@ -32,7 +32,7 @@ public class ExceptionHandlingAspect {
             logger.error("Exception in {}.{}() with message: {}", className, methodName,
                     ex.getMessage() != null ? ex.getMessage() : "No message");
 
-            throw ex; // لازم نرميه تاني عشان يوصله الـ GlobalExceptionHandler
+            throw ex;
         }
     }
 }
